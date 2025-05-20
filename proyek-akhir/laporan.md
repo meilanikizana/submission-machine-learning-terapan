@@ -99,12 +99,12 @@ Dataset yang digunakan dalam proyek ini merupakan dataset development berjudul '
     - Terdapat 1 kolom bertipe object yaitu 'tag'
     - Semua kolom terdiri dari jumlah data yang sama yaitu 3.683
 
-8. Mengecek nilai kosong dengan fungsi `isnull().sum()`:
+8. Mengecek nilai kosong dalam data:
 
     Pengecekan nilai kosong dilakukan hanya pada movies dan ratings karena kedua data ini yang akan digunakan, sedangkan links dan tags tidak dilakukan pengecekan nilai kosong karena tidak akan digunakan pada proyek ini.
    - Tidak terdapat nilai null di setiap kolom dalam data movies maupun data ratings
    
-9. Mengecek data duplikat dengan fungsi `duplicated().sum()`:
+9. Mengecek data duplikat pada data yang akan digunakan:
 
     Pengecekan data duplikat dilakukan hanya pada movies dan ratings karena kedua data ini yang akan digunakan, sedangkan links dan tags tidak dilakukan pengecekan data duplikat karena tidak akan digunakan pada proyek ini.
    - Tidak terdapat data duplikat dalam data movies maupun data ratings
@@ -123,25 +123,35 @@ Dataset yang digunakan dalam proyek ini merupakan dataset development berjudul '
    Barchart diatas digunakan untuk menampilkan visualisasi dari distribusi rating film dalam data. Dari hasilnya dapat diketahui bahwa rating 3.0 dan 4.0 cukup mendominasi jumlahnya. Adapun rating 0.5 dan 1.5 memiliki jumlah yang paling sedikit. Selain itu, dapat diketahui pula interval rating adalah 0.5.
 
 ## Data Preparation
-Proyek ini akan membangun sistem rekomendasi dengan content based filtering dan collaborative filtering, sehingga persiapan data juga dipisahkan berdasarkan dua metode pendekatan tersebut.
+Proyek ini akan membangun sistem rekomendasi dengan content based filtering dan collaborative filtering, sehingga persiapan data juga dipisahkan berdasarkan dua metode pendekatan tersebut. Sebelum masuk ke persiapan data untuk masing-masing pendekatan, terdapat beberapa persiapan yang dilakukan secara umum untuk data yang akan digunakan nantinya. Berikut ini adalah 2 persiapan yang dilakukan:
+1. Mengecek nilai kosong dengan `isnull().sum()`:
+
+    Pengecekan nilai kosong dilakukan hanya pada movies dan ratings karena kedua data ini yang akan digunakan, sedangkan links dan tags tidak dilakukan pengecekan nilai kosong karena tidak akan digunakan pada proyek ini.
+   - Tidak terdapat nilai null di setiap kolom dalam data movies maupun data ratings
+   
+2. Mengecek data duplikat dengan `duplicated().sum()`:
+
+    Pengecekan data duplikat dilakukan hanya pada movies dan ratings karena kedua data ini yang akan digunakan, sedangkan links dan tags tidak dilakukan pengecekan data duplikat karena tidak akan digunakan pada proyek ini.
+   - Tidak terdapat data duplikat dalam data movies maupun data ratings
+ 
+Berikut ini adalah persiapan data untuk masing-masing pendekatan:
+
 1. Content Based Filtering Data Preparation
    
     a. Mengatasi Nilai Genre '(no genres listed)'
 
     Setelah dilakukan visuliasasi di tahap sebelumnya, ditemukan genre '(no genres listed)' yang artinya film belum memiliki genre. Maka pada tahap ini, data yang belum memiliki genre atau berisikan nilai '(no genres listed)' akan dihapus karena tidak memberikan informasi yang berarti dan dapat mengganggu performa sistem rekomendasi apabila tidak dihapus. Setelah dihapus, dilakukan pengecekan kembali dengan visualiasi untuk memastikan penanganan sudah benar dan berhasil.
 
-    b. TF-IDF Vectorizer dan Cosine Similarity
+    b. TF-IDF Vectorizer
 
-    Tahapan ini digunakan untuk mengubah teks genre menjadi representasi numerik dan menghitung derajat kesamaan antar film. Tahapan ini merupakan tahap yang penting untuk membangun sistem rekomendasi berbasis konten. Teks genre diidentifikasi dan diubah ke dalam bentuk numerik agar dapat dihitung derajat kesamaannya menggunakan cosine similarity. Berikut ini adalah tahapan-tahapan yang dilakukan: 
-    - Identifikasi Genre Film: mengubah data teks (genre) menjadi representasi numerik (TF-IDF matrix)
-    - Fit dan Transform ke Bentuk Matriks: hasil ukuran matriks (9708, 21) yang artinya terdapat 9708 film dan 21 jenis genre
+    Tahapan ini digunakan untuk mengubah teks genre menjadi representasi numerik. Tahapan ini merupakan tahap yang penting untuk membangun sistem rekomendasi berbasis konten. Teks genre diidentifikasi dan diubah ke dalam bentuk numerik agar dapat dihitung derajat kesamaannya menggunakan cosine similarity di tahap berikutnya. Berikut ini adalah tahapan-tahapan yang dilakukan: 
+    - Identifikasi Genre Film: mengubah data teks (genre) menjadi representasi numerik (TF-IDF matrix) dan menampilkan array hasil identifikasi genre
+    - Fit dan Transform ke Bentuk Matriks: hasil ukuran matriks adalah (9708, 21) yang artinya terdapat 9708 film dan 21 jenis genre
     - Mengubah Vektor TF-IDF dalam Bentuk Matriks: menggunakan fungsi todense()
-    - Menampilkan Matriks TF-IDF untuk Beberapa Film terhadap Genre
-    - Menghitung Derajat Kesamaan: menggunakan cosine_similarity dan menghasilkan array matriks kesamaan antar film
-    - Menampilkan Matriks Kesamaan antar Film
+    - Menampilkan Matriks TF-IDF untuk Beberapa Film terhadap Genre: hasilnya akan menunjukkan numerik tiap film terkait dengan genrenya
 
 
-3. Collaborative Filtering Data Preparation
+2. Collaborative Filtering Data Preparation
 
     a. Encoding dan Mapping
 
@@ -159,7 +169,9 @@ Proyek ini akan membangun sistem rekomendasi dengan content based filtering dan 
 Pada tahapan ini dilakukan pembangunan sistem rekomendasi dengan 2 pendekatan untuk menyelesaikan permasalahan yang telah diidentifikasi sebelumnya. Pada proyek ini, saya menggunakan 2 pendekatan untuk sistem rekomendasi yaitu Content-Based Filtering dan Collaborative Filtering. Berikut ini adalah penjelasan lebih lanjut mengenai kedua pendekatan tersebut:
 1. Content Based Filtering
 
-    Pada tahap ini dilakukan pembuatan fungsi movie_recommendations dengan menggunakan beberapa parameter yaitu:
+    Sebelum mulai membangun fungsi untuk rekomendasi, diperlukan cosine similarity untuk menghitung derajat kesamaan antar film. Teks genre yang telah diubah ke dalam bentuk numerik kemudian akan dihitung derajat kesamaannya menggunakan cosine similarity dan menghasilkan array matriks kesamaan antar film. Setelah dihitung derajat kesamaan antar film, kemudian data-data tersebut disimpan ke dalam dataframe baru bernama cosine_sim_df untuk kemudian digunakan dalam pembangunan fungsi sebagai data similarity.
+    
+    Kemudian, tahap selanjutkan adalah pembuatan fungsi movie_recommendations dengan menggunakan beberapa parameter yaitu:
     - judul: judul film (index kemiripan dataset)
     - similarity_data: dataframe mengenai similarity/kesamaan yang telah didefinisikan sebelumnya menggunakan cosine
     - items: nama dan fitur yang digunakan untuk mendefinisikan kemiripan yaitu judul film dan genrenya
@@ -196,26 +208,28 @@ Pada tahapan ini dilakukan pembangunan sistem rekomendasi dengan 2 pendekatan un
     - Operasi Perkalian Dot Product antara Embedding User dan Film
     - Fungsi Aktivasi Sigmoid untuk Menentukan Skor Kecocokan dalam Skala [0, 1]
 
-    Model ini akan menghasilkan output berupa top 10 rekomendasi film yang sesuai dengan preferensi pengguna dilihat dari riwayat ratingnya. Sebagai contoh untuk pengguna dengan id 599 dan 5 film dengan rating tertinggi sebagai berikut:
-    - Rumble in the Bronx (Hont faan kui) (1995) : Action|Adventure|Comedy|Crime
-    - 2001: A Space Odyssey (1968) : Adventure|Drama|Sci-Fi
-    - His Girl Friday (1940) : Comedy|Romance 
-    - Road Warrior, The (Mad Max 2) (1981) : Action|Adventure|Sci-Fi|Thriller
-    - Lost in Translation (2003) : Comedy|Drama|Romance
+    Model ini akan menghasilkan output berupa top 10 rekomendasi film yang sesuai dengan preferensi pengguna dilihat dari riwayat ratingnya. Sebagai contoh untuk pengguna dengan id 43 dan 5 film dengan rating tertinggi sebagai berikut:
+    - Toy Story (1995) : Adventure|Animation|Children|Comedy|Fantasy
+    - Grumpier Old Men (1995) : Comedy|Romance
+    - Father of the Bride Part II (1995) : Comedy
+    - Sabrina (1995) : Comedy|Romance
+    - Tom and Huck (1995) : Adventure|Children
 
     Berikut ini adalah rekomendasi film yang dihasilkan oleh sistem rekomendasi untuk pengguna dengan id 599 tersebut:
     - Secrets & Lies (1996) : Drama
     - Once Upon a Time in the West (C'era una volta il West) (1968) : Action|Drama|Western
-    - Ran (1985) : Drama|War
-    - Bridge on the River Kwai, The (1957) : Adventure|Drama|War
-    - Patton (1970) : Drama|War
-    - Night on Earth (1991) : Comedy|Drama
+    - Cinema Paradiso (Nuovo cinema Paradiso) (1989) : Drama
+    - Paths of Glory (1957) : Drama|War
+    - Doctor Zhivago (1965) : Drama|Romance|War
+    - Time of the Gypsies (Dom za vesanje) (1989) : Comedy|Crime|Drama|Fantasy
+    - Lady Eve, The (1941) : Comedy|Romance
     - Guess Who's Coming to Dinner (1967) : Drama
-    - Trial, The (Procès, Le) (1962) : Drama
-    - Adam's Rib (1949) : Comedy|Romance
-    - Three Billboards Outside Ebbing, Missouri (2017) : Crime|Drama
+    - Hustler, The (1961) : Drama
+    - Dersu Uzala (1975) : Adventure|Drama
+    - Jonah Who Will Be 25 in the Year 2000 (Jonas qui aura 25 ans en l'an 2000) (1976) : Comedy
+    - In the Loop (2009) : Comedy
     
-    Film dengan rating tertinggi yang diberikan oleh pengguna berkisar pada genre Action, Adventure, Comedy, Crime, Drama, Sci-Fi, Romance, dan Thiller. Hasil rekomendasi film yang diberikan untuk pengguna cukup selaras dengan film yang dirating tinggi oleh pengguna yaitu berkisar pada genre Drama, Comedy, Adventure, dan Crime. Namun juga tidak terbatas pada genre-genre tersebut.
+    Film dengan rating tertinggi yang diberikan oleh pengguna berkisar pada genre Adventure, Animation, Children, Comedy, Fantasy, dan Romance. Hasil rekomendasi film yang diberikan untuk pengguna cukup selaras dengan film yang dirating tinggi oleh pengguna yaitu berkisar pada genre Comedy, Romance, dan Fantasy. Namun juga tidak terbatas pada genre-genre tersebut sehingga hasil rekomendasi dapat lebih beragam.
 
     Berikut ini adalah kelebihan dan kekurangan dari pendekatan collaborative filtering:
 
@@ -250,13 +264,13 @@ Metrik evaluasi yang digunakan dalam proyek ini adalah precision untuk content b
    - $y_i$: nilai sebenarnya
    - $\hat{y}_i$: nilai prediksi
 
-    Pelatihan model menggunakan ukuran batch yaitu 8 dan 20 epoch. Nilai RMSE pada data latih adalah '0.1887' dan pada data validasi adalah '0.2019'. Hal ini menunjukkan bahwa model sudah cukup baik dan tidak mengalami overfitting pada data latih. Penurunan nilai RMSE dari epoch awal hingga akhir juga menandakan proses training yang cukup smooth. Berikut ini adalah visualisasinya:
+    Pelatihan model menggunakan ukuran batch yaitu 8 dan 20 epoch. Nilai RMSE pada data latih adalah '0.1883' dan pada data validasi adalah '0.2022'. Hal ini menunjukkan bahwa model sudah cukup baik dan tidak mengalami overfitting pada data latih. Penurunan nilai RMSE dari epoch awal hingga akhir juga menandakan proses training yang cukup smooth. Berikut ini adalah visualisasinya:
 
-    ![RMSE Metrics Visualization](https://i.ibb.co/Qv7rFhcx/visualisasi-rmse-metrik.png)
+    ![RMSE Metrics Visualization](https://i.ibb.co/WWWZDNyF/metrik-RMSEpng.png)
     
 ## Kesimpulan Akhir
 Setelah melakukan seluruh tahapan diatas, maka dapat diambil kesimpulan bahwa sistem rekomendasi telah berhasil memberikan rekomendasi film yang relevan menggunakan 2 jenis pendekatan yaitu content based filtering dan collaborative filtering. Selain itu, untuk menjawab problem statement dan goals yang telah diidentifikasi di awal. Berikut ini adalah beberapa hal yang dapat disimpulkan:
 - Sistem rekomendasi dengan pendekatan content based filtering yang berfokus pada genre film berhasil memberikan 5 rekomendasi film yang sesuai dengan genre yang disukai oleh pengguna dan sesuai dengan film yang pernah ditonton oleh pengguna. Hasil evaluasi menunjukkan performa yang sangat baik yaitu tingkat presisi 1 atau 100%.
-- Sistem rekomendasi dengan pendekatan collaborative filtering yang berfokus pada riwayat rating pengguna berhasil memberikan 10 rekomendasi film yang sesuai dengan preferensi masing-masing pengguna. Hasil evaluasi menunjukkan performa yang cukup baik untuk sistem rekomendasi yaitu nilai RMSE sebesar 0,2019 pada data validasi.
+- Sistem rekomendasi dengan pendekatan collaborative filtering yang berfokus pada riwayat rating pengguna berhasil memberikan 10 rekomendasi film yang sesuai dengan preferensi masing-masing pengguna. Hasil evaluasi menunjukkan performa yang cukup baik untuk sistem rekomendasi yaitu nilai RMSE sebesar 0,2022 pada data validasi.
 
 Kedua pendekatan yang diterapkan pada sistem rekomendasi ini memiliki kelebihan dan kekurangannya masing-masing. Secara umum, kedua pendekatan ini memiliki performa yang cukup baik dan dapat menjadi solusi dari masalah yang telah diidentifikasikan di awal, baik dari sisi pengguna maupun dari sisi bisnis.
